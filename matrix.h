@@ -31,7 +31,8 @@ namespace matrix
     public:
         // constructors and destructor
         Matrix();
-        Matrix( const Matrix<Type> &A );
+		Matrix(int, int);
+		Matrix( const Matrix<Type> &A );
 
         // accessors
         const vector<Type> &operator[]( int i );

@@ -66,6 +66,11 @@ Matrix<Type>::Matrix()
 }
 
 template <typename Type>
+Matrix<Type>::Matrix(int row, int col){
+	init(row, col);
+}
+
+template <typename Type>
 Matrix<Type>::Matrix( const Matrix<Type> &A )
 {
 	row = A.rows();
