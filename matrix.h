@@ -19,6 +19,7 @@
 
 
 #include <vector>
+#include<cassert>
 #include <iostream>
 using namespace std;
 
@@ -33,48 +34,48 @@ namespace matrix
         Matrix();
 		Matrix(int, int);
 		Matrix( const Matrix<Type> &A );
-
         // accessors
-        const vector<Type> &operator[]( int i );
-        const Type& operator()( int row, int column );
-        const int rows();
-        const int cols();
+        const vector<Type> &operator[]( int i ) const;
+        vector<Type> &operator[]( int i );
+        Type& operator()( int row, int column );
+        const Type& operator()( int row, int column ) const;
+        int rows() const;
+        int cols() const ;
 		void setScalar(const Type &x);
+		void setRow(const size_t &, const vector<Type> &a);
 
-		
+	private:
 		typedef vector<Type> vec;
 		vector<vec> _matrix;
 		// row number, column number and total number
         int	 row;
         int	 col;
         void init( int rows, int columns );
-		void setRow(const size_t &, const vector<Type> &a);
     };
-    // class Matrix
-    template<typename Type>
-    ostream& operator<<( ostream&, const Matrix<Type>& );
-    template<typename Type>
-    istream& operator>>( istream&, Matrix<Type>& );
+	
+	template<typename Type>
+	void printmatrix(const Matrix<Type>& );
 
-    template<typename Type>
-    Matrix<Type> operator+( const Matrix<Type>&, const Matrix<Type>& );
-    template<typename Type>
-    Matrix<Type> operator-( const Matrix<Type>&, const Matrix<Type>& );
-    template<typename Type>
-    Matrix<Type> operator*( const Matrix<Type>&, const vector<Type>& );
-    template<typename Type>
-    Matrix<Type> operator*( const vector<Type> &, const Matrix<Type>& );
-    template<typename Type>
-    Matrix<Type> operator*( const Matrix<Type>&, const Matrix<Type>& );
-	template<typename Type>
-	Matrix<Type> operator*( const Matrix<Type>&, const Type&);
-	template<typename Type>
-	Matrix<Type> operator*( const Type &, const Matrix<Type>&);
-	template<typename Type>
-	Matrix<Type> operator/( const Type &, const Matrix<Type>&);
-	template<typename Type>
-	Matrix<Type> operator*( const Matrix<Type>&, const Type&);
-
+	template<typename Type, typename Class>
+	Matrix<Type> operator+( const Matrix<Type>&, const Matrix<Class>& );
+	template<typename Type, typename Class>
+	Matrix<Type> operator-( const Matrix<Type>&, const Matrix<Class>& );
+	template<typename Type, typename Class>
+	vector<Type> operator*( const Matrix<Type>&, const vector<Class>& );
+	template<typename Type, typename Class>
+	vector<Type> operator*( const vector<Class> &, const Matrix<Type>& );
+	template<typename Type, typename Class>
+	Matrix<Type> operator*( const Matrix<Type>&, const Matrix<Class>& );
+	template<typename Type, typename Class>
+	Matrix<Type> operator*( const Matrix<Type>&, const Class&);
+	template<typename Type, typename Class>
+	Matrix<Type> operator*( const Class &, const Matrix<Type>&);
+	template<typename Type, typename Class>
+	Matrix<Type> operator/( const Class &, const Matrix<Type>&);
+	template<typename Type, typename Class>
+	Matrix<Type> operator/( const Matrix<Type>&, const Class&);
+	
+	#include "imatrix.h"
 }
 
 using namespace matrix;
