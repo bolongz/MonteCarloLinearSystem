@@ -1,6 +1,7 @@
 
 
 #include "matrix.h"
+#include "power.h"
 #include <cassert>
 int main(){
 	Matrix<double> A(3,3);
@@ -45,5 +46,14 @@ int main(){
 	
 	cout << J[0] << "  " <<J[1] << "  " << J[2] << endl;
 
+	cout <<"max  " << power(A) << endl;
+	Matrix<double> AA(2,2);
+	vector<double> aa(2);
+	aa[0] = 3; aa[1] = 1;
+	AA.setRow(0,aa);
+	vector<double> b(2);
+	b[0] = 3; b[1] = 1;
+	AA.setRow(1, b);
+	cout <<"max  " << power(AA) << endl;
 	return 0;
 }

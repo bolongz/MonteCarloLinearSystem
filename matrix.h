@@ -47,7 +47,7 @@ namespace matrix
 	private:
 		typedef vector<Type> vec;
 		vector<vec> _matrix;
-		// row number, column number and total number
+		// row number, column number
         int	 row;
         int	 col;
         void init( int rows, int columns );
