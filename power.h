@@ -1,3 +1,5 @@
+#ifndef _POWER_H_
+#define _POWER_H_
 
 #include "matrix.h"
 #include <cmath>
@@ -26,3 +28,4 @@ Type power(const Matrix<Type> &A){
 	return lamda;
 }
 
+#endif
