@@ -44,11 +44,18 @@ int main(){
 		cout << "Can not convergence !" << endl;
 		exit(1);
 	}
-	std::vector<double> res = neumann(A,b);
+/*	std::vector<double> res = neumann_absorbing(A,b);
 	cout << " final----------------" << endl;
 	for(int i = 0 ; i  <res.size(); i++){
 
 		cout << res[i] << endl;
+	}
+	
+*/	std::vector<double> res1 = neumann_nonabsorbing(A,b);
+	cout << " final----------------" << endl;
+	for(int i = 0 ; i  <res1.size(); i++){
+
+		cout << res1[i] << endl;
 	}
 	return 0;
 	

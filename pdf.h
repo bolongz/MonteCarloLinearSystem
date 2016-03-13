@@ -4,7 +4,7 @@
 #include "math.h"
 //transition probility with non absorbing 
 template<typename Type>
-const Matrix<Type> nonAbsorbing(const Matrix<Type> &A){
+const Matrix<Type> nonAbsorbing(const Matrix<Type> &A, Matrix<Type> &P){
 	int row = A.rows();
 	int col = A.cols();
 	Matrix<Type> T(row, col);
@@ -17,12 +17,13 @@ const Matrix<Type> nonAbsorbing(const Matrix<Type> &A){
 		}
 		for(int j = 0 ; j < col; j++){
 
-			T[i][j] = abs(A[i][j]) / sum;
+			P[i][j] = abs(A[i][j]) / sum;
 		}
 	}
 	for(int i = 0 ; i < row; i++){
+		T[i][0] = P[i][0];
 		for(int j = 1 ;j <col; j++){
-			T[i][j] += T[i][j-1];
+			T[i][j] = T[i][j-1] + P[i][j];
 		}
 		T[i][col-1] = 1.0;
 	}
