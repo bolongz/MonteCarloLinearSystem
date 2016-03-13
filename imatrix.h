@@ -26,6 +26,12 @@ void Matrix<Type>::init( int rows, int columns )
 	}
 }
 
+template<typename Type>
+void Matrix<Type>::unit(){
+
+	for(int i = 0 ; i < row; i++)
+		_matrix[i][i] = 1;
+}
 
 /**
  * Insert the ith row
@@ -293,7 +299,7 @@ inline  Matrix<Type>  operator/( const Matrix<Type> &A, const Class &x )
 }
 
 template <typename Type, typename Class>
- Matrix<Type>  operator/( const Class &x, const Matrix<Type> &A )
+Matrix<Type>  operator/( const Class &x, const Matrix<Type> &A )
 {
 	const int rows = A.rows();
 	const int clumns = A.cols();

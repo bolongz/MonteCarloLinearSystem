@@ -34,6 +34,7 @@ namespace matrix
         Matrix();
 		Matrix(int, int);
 		Matrix( const Matrix<Type> &A );
+		void unit();
         // accessors
         const vector<Type> &operator[]( int i ) const;
         vector<Type> &operator[]( int i );
@@ -43,7 +44,6 @@ namespace matrix
         int cols() const ;
 		void setScalar(const Type &x);
 		void setRow(const size_t &, const vector<Type> &a);
-
 	private:
 		typedef vector<Type> vec;
 		vector<vec> _matrix;
