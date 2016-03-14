@@ -10,7 +10,7 @@
 #include "neumann.h"
 int main(){
 	freopen("in.txt", "r", stdin);
-	int size = 2;
+	int size = 3;
 	Matrix<double> A(size,size);
 	for(int i = 0; i < size; i++){
 		vector<double> a;
@@ -44,14 +44,18 @@ int main(){
 		cout << "Can not convergence !" << endl;
 		exit(1);
 	}
-/*	std::vector<double> res = neumann_absorbing(A,b);
+	Neumann neumann1;
+	std::vector<double> res = neumann1.absorbing(A,b);
 	cout << " final----------------" << endl;
 	for(int i = 0 ; i  <res.size(); i++){
 
 		cout << res[i] << endl;
 	}
 	
-*/	std::vector<double> res1 = neumann_nonabsorbing(A,b);
+
+	Neumann neumann;
+
+	std::vector<double> res1 = neumann.nonabsorbing(A,b);
 	cout << " final----------------" << endl;
 	for(int i = 0 ; i  <res1.size(); i++){
 
