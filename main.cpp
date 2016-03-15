@@ -8,6 +8,7 @@
 #include<stdio.h>
 #include "stdlib.h"
 #include "neumann.h"
+#include <string.h>
 int main(){
 	freopen("in.txt", "r", stdin);
 	int size = 3;
@@ -120,3 +121,44 @@ int main(){
 */
 
 }
+/*
+#define line_size 512
+int main(int argc, char *argv[])
+{
+	FILE *inFPtr;
+	char line[line_size];
+	char *token;
+
+	if (argc < 2)
+	{
+		Matrix<double> A(3, 3);
+		printmatrix(A);
+	}
+	else
+	{
+		if ((inFPtr = fopen(argv[1], "r")) == NULL)
+		{
+			cout << "Error: unable to open the inputed file.\n";
+			exit(0);
+		}
+
+		Matrix<double> A(0, 0);
+		while (fgets(line, line_size, inFPtr) != NULL)
+		{
+			if (line[0] != '#')
+			{
+				vector<double> vect;
+				token = strtok(line, ", ");
+				while (token != NULL)
+				{
+					vect.push_back(strtod(token, NULL));
+					token = strtok(NULL, ", ");
+				}
+				A.addRow(vect);
+			}
+		}
+		printmatrix(A);
+	}
+	return 0;
+}
+*/
