@@ -49,6 +49,30 @@ void Matrix<Type>::setRow(const size_t &i,  const vector<Type> &a )
 
 
 /**
+* Add a row
+*/
+template <typename Type>
+void Matrix<Type>::addRow(const vector<Type> &a)
+{
+	vector<Type> tmp_vec;
+	if (row == 0)
+		col = a.size();
+	
+	// if col < a.size(), we will omit any additional values in the vector, can be done later
+	for (int j = 0; j < col; j++)
+	{
+		if (j > a.size()) // this part can be omitted if we don't want to consider it
+			tmp_vec.push_back(0);
+		else
+			tmp_vec.push_back(a[j]);
+	}
+	
+	_matrix.push_back(tmp_vec);
+	row++;
+}
+
+
+/**
  * set matrix by a scalar
  */
 template <typename Type>

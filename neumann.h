@@ -21,7 +21,7 @@ public:
 		err_w = 1e-6;
 	}
 	template <typename Type>
-	std::vector<Type> absorbing(const Matrix<Type> &A, const std::vector<Type> &b){
+	std::vector<Type> absorbing(const Matrix<Type> &A, const std::vector<Type> &b, double _err = 0.1){
 		row = A.rows();col = A.cols();
 		Matrix<Type> P(row +1, col +1);
 		Matrix<Type> t = Absorbing(A, 0.2, P);
@@ -34,7 +34,8 @@ public:
 			double sum1 = 0.0, sum2 = 0.0, x = 0.0;
 			int next = 0, step = 100, times = 1;
 			cout << "step i" << endl;
-			*/while( err > 0.005){
+			*/while( err > _err){
+
 				while(step--){
 					double v = 1.0;
 					int index = i, next = 0;
@@ -52,6 +53,7 @@ public:
 					sum1 += v;
 					sum2 += v * v ;
 				}
+
 				step = 100;
 				int total = step * times;
 				x = sum1 / total;
@@ -65,7 +67,7 @@ public:
 		return res;
 	}
 	template <typename Type>
-	std::vector<Type> nonabsorbing(const Matrix<Type> &A, const std::vector<Type> &b){
+	std::vector<Type> nonabsorbing(const Matrix<Type> &A, const std::vector<Type> &b, double _err = 0.1){
 		row = A.rows(); col = A.cols();
 		Matrix<Type> P(row, col);
 		Matrix<Type> t = nonAbsorbing(A, P);
@@ -78,7 +80,7 @@ public:
 			double sum1 = 0.0, sum2 = 0.0, x = 0.0, ee = 0.000001;
 			int next = 0, step = 100 ,times = 1;
 			cout << "step i" << endl;
-			*/while( err > 0.005){
+			*/while( err > _err){
 				while(step--){
 					double v = 0.0, w = 1.0;
 					int index = i, next = 0;

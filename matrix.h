@@ -44,6 +44,7 @@ namespace matrix
         int cols() const ;
 		void setScalar(const Type &x);
 		void setRow(const size_t &, const vector<Type> &a);
+		void addRow(const vector<Type> &a);
 	private:
 		typedef vector<Type> vec;
 		vector<vec> _matrix;
