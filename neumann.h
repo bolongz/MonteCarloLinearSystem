@@ -38,24 +38,17 @@ public:
 		size_t size = b.size();
 		std::vector<Type> res(size);
 		srand((unsigned)time(NULL));
+		int total;
 		for (int i = 0; i < size; i++) {
 			init();
-			/*double err = 10000.0;
-			double sum1 = 0.0, sum2 = 0.0, x = 0.0;
-			int next = 0, step = 100, times = 1;
-			cout << "step i" << endl;
-			*/while (err > _err) {
-
+			while (err > _err) {
 				while (step--) {
 					double v = 1.0;
 					int index = i, next = 0;
 					while (next != col) {
 						double r = double(rand()) / RAND_MAX;
 						next = upper_bound(t[index].begin(), t[index].end(), r) - t[index].begin();
-						/*	cout << " ---------------------" << endl;
-							cout << r << "  " <<" " << next << " "  <<  t[index][next] << "  " << t[index][next-1] << endl;
-							cout << " ---------------------" << endl;
-						*/	if (next == col) continue;
+						if (next == col) continue;
 						v = v * A[index][next] / P[index][next];
 						index = next;
 					}
@@ -65,13 +58,16 @@ public:
 				}
 
 				step = 100;
-				int total = step * times;
+				total = step * times;
+				if(total % 200000 == 0){
+					cout << "Calculating x[" << i<< "]: " << total  << " Random walks generated" << endl;
+				}
 				x = sum1 / total;
-				double _err = (sum2 - sum1 / total) / total / total;
+				double __err = (sum2 - sum1 / total) / total / total ;
 				times++;
-				err = sqrt(_err) / x;
-				//	cout <<total << "  "  <<  err <<  "    "   << x << " " << sum1  << endl;
+				err = sqrt(__err) / x; 
 			}
+			cout << "Calculating x[" << i<< "]: " << total  << " Random walks generated" << endl;
 			res[i] = x;
 		}
 		return res;
@@ -83,43 +79,36 @@ public:
 		Matrix<Type> t = nonAbsorbing(A, P);
 		size_t size = b.size();
 		std::vector<Type> res(size);
-		srand((unsigned)time(NULL));
-		for (int i = 0; i < size; i++) {
+		srand((unsigned)time(NULL));	
+		int total;
+		for(int i = 0 ; i < size; i++){
 			init();
-			/*double err = 10000.0;
-			double sum1 = 0.0, sum2 = 0.0, x = 0.0, ee = 0.000001;
-			int next = 0, step = 100 ,times = 1;
-			cout << "step i" << endl;
-			*/while (err > _err) {
-				while (step--) {
+			while( err > _err){
+				while(step--){
 					double v = 0.0, w = 1.0;
 					int index = i, next = 0;
-					//cout << "start" << endl;
-					while (abs(w) > err_w) {
-						double r = double(rand()) / RAND_MAX;
-						next = upper_bound(t[index].begin(), t[index].end(), r) - t[index].begin();
+					while(abs(w) > err_w){
+						double r = double(rand())/RAND_MAX;
+						next = upper_bound(t[index].begin(), t[index].end(), r) -t[index].begin();
 						w = w * A[index][next] / P[index][next];
-						/*					cout << " ---------------------" << endl;
-											cout << r << "  " <<" " << next << " "  <<  t[index][next] << "  " << t[index][next-1] << endl;
-											cout << " ---------------------" << endl;
-
-						*/					v = v + w * b[next];
-						//cout << v << endl;
+						v = v + w * b[next];
 						index = next;
 					}
 					v = v + b[i];
-					//cout << "break" << endl;
 					sum1 += v;
 					sum2 += v * v;
 				}
 				step = 100;
-				int total = step * times;
+				total = step * times;
+				if(total % 200000 == 0){
+					cout << "Calculating x[" << i<< "]: " << total  << " Random walks generated" << endl;
+				}
 				x = sum1 / total;
-				double _err = (sum2 - sum1 / total) / total / total;
+				double __err = (sum2 - sum1 / total) / total / total ;
 				times++;
-				err = sqrt(_err) / x;
-				//cout <<total << "  "  <<  err <<  "    "   << x << " " << sum1  << endl;
+				err = sqrt(__err) / x; 
 			}
+			cout << "Calculating x[" << i<< "]: " << total  << " Random walks generated" << endl;
 			res[i] = x;
 		}
 		return res;
@@ -153,11 +142,15 @@ public:
 			}
 			step_trd = 100;
 			total = step_trd* times_trd;
+			if (total % 200000 == 0) {
+				cout << "Calculating x[" << *(int *)arg << "]: " << total << " Random walks generated" << endl;
+			}
 			x_trd = sum1_trd / total;
-			_err_trd = (sum2_trd - sum1_trd / total) / total / total;
+			double __err_trd = (sum2_trd - sum1_trd / total) / total / total;
 			times_trd++;
-			err_trd = sqrt(_err_trd) / x_trd;
+			err_trd = sqrt(__err_trd) / x_trd;
 		}
+		cout << "Calculating x[" << *(int *)arg << "]: " << total << " Random walks generated" << endl;
 		res_ForThreading[*(int *)arg] = x_trd;
 	}
 
@@ -208,8 +201,11 @@ public:
 			}
 			step_trd = 100;
 			total = step_trd* times_trd;
+			if (total % 200000 == 0) {
+				cout << "Calculating x[" << *(int *)arg << "]: " << total << " Random walks generated" << endl;
+			}
 			x_trd = sum1_trd / total;
-			_err_trd = (sum2_trd - sum1_trd / total) / total / total;
+			double __err_trd = (sum2_trd - sum1_trd / total) / total / total;
 			times_trd++;
 			err_trd = sqrt(_err_trd) / x_trd;
 		}
