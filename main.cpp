@@ -82,7 +82,7 @@ int main(int argc, char *argv[]){
 
 	cout << "Solution for the Matrix: " << endl;
 
-	for(int i = 0 ; i  <res.size(); i++){
+	for(int i = 0 ; i  < (int)res.size(); i++){
 			cout << res[i] << endl;
 	}
 

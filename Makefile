@@ -2,7 +2,7 @@ SRC = main.cpp
 OBJ = $(SRC:.cpp = .o)
 PROGRAM = MonteCarlo
 CC = g++
-CFLAGS = –ansi -std=c++11 -g –Wall
+CFLAGS = -std=c++11 -g
 all:$(PROGRAM)
 
 $(PROGRAM):$(OBJ)
