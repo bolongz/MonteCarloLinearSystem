@@ -60,7 +60,7 @@ int main(int argc, char *argv[]){
 	}
 	
 	Timer tmr;
-	Neumann neumann;
+	Neumann<double> neumann;
 	std::vector<double> res;
 	if(argc >= 6 && argv[5][1] == 'm'){
 		if(argv[6][0] == 'n'){
@@ -70,6 +70,12 @@ int main(int argc, char *argv[]){
 			cout << "Method with Absorbing Matrix:" << endl;
 
 			res = neumann.absorbing(A,b, p);
+		}else if (argv[6][0] == 'b') {
+			cout << "Method with Absorbing Matrix using threads:" << endl;
+			res = neumann.absorbing_UsingThreads(A, b, p);
+		}else if (argv[6][0] == 'c') {
+			cout << "Method with nonAbsorbing Matrix using threads:" << endl;
+			res = neumann.nonabsorbing_UsingThreads(A, b, p);
 		}else{
 			cout << "Wrong input type paramenters" << endl;
 		}
@@ -83,7 +89,7 @@ int main(int argc, char *argv[]){
 
 	cout << "Solution for the Matrix: " << endl;
 
-	for(int i = 0 ; i  <res.size(); i++){
+	for(int i = 0 ; i  < (int)res.size(); i++){
 			cout << res[i] << endl;
 	}
 
