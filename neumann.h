@@ -111,7 +111,6 @@ public:
 		return res;
 	}
 	
-	template <typename Type>
 	std::vector<Type> backwards(const Matrix<Type> &A, const std::vector<Type> &b, double _err = 0.1){
 		row = A.rows();col = A.cols();
 		Matrix<Type> P(row +1, col +1);
@@ -131,6 +130,7 @@ public:
 		int total, _i, _times = 1;
 		int en = 100;
 		init();
+		step = 20000;
 		while(en--){
 				while(step--){
 					double _r = double(rand())/ RAND_MAX;
@@ -157,7 +157,7 @@ public:
 					}
 				}
 				init();
-				//step = 20000;
+				step = 20000;
 				total = step * _times;
 				_times++;
 				cout << "Backwards: " << total  << " Random walks generated" << endl;
