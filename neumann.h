@@ -46,7 +46,11 @@ public:
 						double r = double(rand()) / RAND_MAX;
 						next = upper_bound(t[index].begin(), t[index].end(), r) - t[index].begin();
 						if (next == col) continue;
-						v = v * A[index][next] / P[index][next];
+						if(P[index][next] != 0){
+							v = v * A[index][next] / P[index][next];
+						}else{
+							v = 0;
+						}
 						index = next;
 					}
 					v = v * b[index] / P[index][col];
@@ -87,7 +91,11 @@ public:
 					while (abs(w) > err_w) {
 						double r = double(rand()) / RAND_MAX;
 						next = upper_bound(t[index].begin(), t[index].end(), r) - t[index].begin();
-						w = w * A[index][next] / P[index][next];
+						if(P[index][next] != 0){
+							w = w * A[index][next] / P[index][next];
+						}else{
+							w = 0;
+						}
 						v = v + w * b[next];
 						index = next;
 					}
@@ -141,7 +149,11 @@ public:
 						double r = double(rand())/RAND_MAX;
 						next = upper_bound(t[index].begin(), t[index].end(), r) -t[index].begin();
 						if(next == col) continue;	
-						v = v * A[next][index] /  P[index][next];
+						if(P[index][next] != 0){
+							v = v * A[next][index] /  P[index][next];
+						}else{
+							v = 0;
+						}
 						index = next;
 					}
 					for(int i = 0 ; i < row; i++){
