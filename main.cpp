@@ -4,8 +4,8 @@
 #include <cassert>
 #include<stdio.h>
 #include "stdlib.h"
-#include "neumann.h"
 #include <string.h>
+#include "neumann.h"
 #include "time.h"
 
 int main(int argc, char *argv[]){
@@ -47,13 +47,17 @@ int main(int argc, char *argv[]){
 	}
 
 
-	if(argc>= 4 &&  argv[3][1] != 'p'){
+	double p;
+/*	if(argc>= 4){
 
 		cout << "wrong parameters: You should input the expectation precision fistly" << endl;
 		exit(1);
+	}else */
+	if(argc < 4){
+		p = 0.01;
+	}else{
+		p = atof(argv[4]);
 	}
-
-	double p = atof(argv[4]);
 	
 	Timer tmr;
 	Neumann neumann;
@@ -69,6 +73,9 @@ int main(int argc, char *argv[]){
 		}else{
 			cout << "Wrong input type paramenters" << endl;
 		}
+	}else if(argv[4][0] == 'b'){
+		
+			res = neumann.backwards(A,b, p);
 	}else{
 			cout << "Method with Absorbing Matrix:" << endl;
 			res = neumann.absorbing(A,b, p);
