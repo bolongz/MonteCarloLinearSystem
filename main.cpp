@@ -72,10 +72,10 @@ int main(int argc, char *argv[]){
 			res = neumann.absorbing(A,b, p);
 		}else if (argv[6][0] == 'b') {
 			cout << "Method with Absorbing Matrix using threads:" << endl;
-			res = neumann.absorbing_UsingThreads(A, b, p);
+			res = neumann.absorbing_UsingThreads(A, b, p, 3); // modify number of threads
 		}else if (argv[6][0] == 'c') {
 			cout << "Method with nonAbsorbing Matrix using threads:" << endl;
-			res = neumann.nonabsorbing_UsingThreads(A, b, p);
+			res = neumann.nonabsorbing_UsingThreads(A, b, p, 3);// modify number of threads
 		}else{
 			cout << "Wrong input type paramenters" << endl;
 		}
