@@ -188,44 +188,47 @@ public:
 		int startingBoun = 0;
 		if (arg > 0)
 			startingBoun = Thr_boun[arg - 1];
-			for (int i = startingBoun; i < Thr_boun[arg]; i++)
-			{
-				double err_trd = 10000.0, _err_trd = 0.1, v = 1.0, r, __err_trd;
-				double sum1_trd = 0.0, sum2_trd = 0.0, x_trd = 0.0;
-				int step_trd = 100, times_trd = 1, index = arg, next_trd, total;
+		for (int i = startingBoun; i < Thr_boun[arg]; i++)
+		{
+			double err_trd = 10000.0, _err_trd = 0.1, v = 1.0, r, __err_trd;
+			double sum1_trd = 0.0, sum2_trd = 0.0, x_trd = 0.0;
+			int step_trd = 100, times_trd = 1, index = i, next_trd = 0, total;
 
-				while (err_trd > _err_trd)
+			while (err_trd > _err_trd)
+			{
+				while (step_trd--)
 				{
-					while (step_trd--)
+					v = 1.0;
+					index = i;
+					next_trd = 0;
+					while (next_trd != col)
 					{
-						v = 1.0;
-						index = arg;
-						next_trd = 0;
-						while (next_trd != A_ForThreading.cols())
-						{
-							r = double(rand()) / RAND_MAX;
-							next_trd = upper_bound(t_ForThreading[index].begin(), t_ForThreading[index].end(), r) - t_ForThreading[index].begin();
-							if (next_trd == A_ForThreading.cols()) continue;
+						r = double(rand()) / RAND_MAX;
+						next_trd = upper_bound(t_ForThreading[index].begin(), t_ForThreading[index].end(), r) - t_ForThreading[index].begin();
+						if (next_trd == col) continue;
+						if (P_ForThreading[index][next_trd] != 0)
 							v = v * A_ForThreading[index][next_trd] / P_ForThreading[index][next_trd];
-							index = next_trd;
-						}
-						v = v * b_ForThreading[index] / P_ForThreading[index][A_ForThreading.cols()];
-						sum1_trd += v;
-						sum2_trd += v * v;
+						else
+							v = 0;
+						index = next_trd;
 					}
-					step_trd = 100;
-					total = step_trd* times_trd;
-					if (total % 200000 == 0) {
-						cout << "Calculating x[" << arg << "]: " << total << " Random walks generated" << endl;
-					}
-					x_trd = sum1_trd / total;
-					__err_trd = (sum2_trd - sum1_trd / total) / total / total;
-					times_trd++;
-					err_trd = sqrt(__err_trd) / x_trd;
+					v = v * b_ForThreading[index] / P_ForThreading[index][col];
+					sum1_trd += v;
+					sum2_trd += v * v;
 				}
-				cout << "Calculating x[" << arg << "]: " << total << " Random walks generated" << endl;
-				res_ForThreading[arg] = x_trd;
+				step_trd = 100;
+				total = step_trd* times_trd;
+				if (total % 200000 == 0) {
+					cout << "Calculating x[" << i << "]: " << total << " Random walks generated" << endl;
+				}
+				x_trd = sum1_trd / total;
+				__err_trd = (sum2_trd - sum1_trd / total) / total / total;
+				times_trd++;
+				err_trd = sqrt(__err_trd) / x_trd;
 			}
+			cout << "Calculating x[" << i << "]: " << total << " Random walks generated" << endl;
+			res_ForThreading[i] = x_trd;
+		}
 	}
 
 	//template <typename Type>
@@ -245,7 +248,7 @@ public:
 		if (thrdsNum > size)
 			thrdsNum = size;
 		for (int i = 0; i < thrdsNum; i++) {
-			takenJobs = (int)ceil((size - takenJobs) / thrdsNum) + takenJobs;
+			takenJobs = (int)ceil((size - takenJobs) / (thrdsNum - i)) + takenJobs;
 			Thr_boun.push_back(takenJobs);
 			threads[i] = std::thread(&Neumann<Type>::abs_thread, this, i);
 		}
@@ -261,44 +264,47 @@ public:
 		int startingBoun = 0;
 		if (arg > 0)
 			startingBoun = Thr_boun[arg - 1];
-			for (int i = startingBoun; i < Thr_boun[arg]; i++)
-			{
-				double err_trd = 10000.0, _err_trd = 0.1, v = 0.0, r, w = 1.0, err_w_trd = 1e-6, __err_trd;
-				double sum1_trd = 0.0, sum2_trd = 0.0, x_trd = 0.0;
-				int step_trd = 100, times_trd = 1, index = arg, next_trd, total;
+		for (int i = startingBoun; i < Thr_boun[arg]; i++)
+		{
+			double err_trd = 10000.0, _err_trd = 0.1, v = 0.0, r, w = 1.0, err_w_trd = 1e-6, __err_trd;
+			double sum1_trd = 0.0, sum2_trd = 0.0, x_trd = 0.0;
+			int step_trd = 100, times_trd = 1, index = i, next_trd, total;
 
-				while (err_trd > _err_trd)
+			while (err_trd > _err_trd)
+			{
+				while (step_trd--)
 				{
-					while (step_trd--)
-					{
-						v = 0.0;
-						w = 1.0;
-						index = arg;
-						next_trd = 0;
-						while (abs(w) > err_w_trd) {
-							r = double(rand()) / RAND_MAX;
-							next_trd = upper_bound(t_ForThreading[index].begin(), t_ForThreading[index].end(), r) - t_ForThreading[index].begin();
+					v = 0.0;
+					w = 1.0;
+					index = i;
+					next_trd = 0;
+					while (abs(w) > err_w_trd) {
+						r = double(rand()) / RAND_MAX;
+						next_trd = upper_bound(t_ForThreading[index].begin(), t_ForThreading[index].end(), r) - t_ForThreading[index].begin();
+						if (P_ForThreading[index][next_trd] != 0)
 							w = w * A_ForThreading[index][next_trd] / P_ForThreading[index][next_trd];
-							v = v + w * b_ForThreading[next_trd];
-							index = next_trd;
-						}
-						v = v + b_ForThreading[arg];
-						sum1_trd += v;
-						sum2_trd += v * v;
+						else
+							w = 0;
+						v = v + w * b_ForThreading[next_trd];
+						index = next_trd;
 					}
-					step_trd = 100;
-					total = step_trd* times_trd;
-					if (total % 200000 == 0) {
-						cout << "Calculating x[" << arg << "]: " << total << " Random walks generated" << endl;
-					}
-					x_trd = sum1_trd / total;
-					__err_trd = (sum2_trd - sum1_trd / total) / total / total;
-					times_trd++;
-					err_trd = sqrt(__err_trd) / x_trd;
+					v = v + b_ForThreading[i];
+					sum1_trd += v;
+					sum2_trd += v * v;
 				}
-				cout << "Calculating x[" << arg << "]: " << total << " Random walks generated" << endl;
-				res_ForThreading[arg] = x_trd;
+				step_trd = 100;
+				total = step_trd* times_trd;
+				if (total % 200000 == 0) {
+					cout << "Calculating x[" << i << "]: " << total << " Random walks generated" << endl;
+				}
+				x_trd = sum1_trd / total;
+				__err_trd = (sum2_trd - sum1_trd / total) / total / total;
+				times_trd++;
+				err_trd = sqrt(__err_trd) / x_trd;
 			}
+			cout << "Calculating x[" << i << "]: " << total << " Random walks generated" << endl;
+			res_ForThreading[i] = x_trd;
+		}
 	}
 
 	//template <typename Type>
@@ -318,7 +324,7 @@ public:
 		if (thrdsNum > size)
 			thrdsNum = size;
 		for (int i = 0; i < thrdsNum; i++) {
-			takenJobs = (int)ceil((size - takenJobs) / thrdsNum) + takenJobs;
+			takenJobs = (int)ceil((size - takenJobs) / (thrdsNum - i)) + takenJobs;
 			Thr_boun.push_back(takenJobs);
 			threads[i] = std::thread(&Neumann<Type>::nonabs_thread, this, i);
 		}
