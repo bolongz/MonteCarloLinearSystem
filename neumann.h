@@ -21,6 +21,7 @@ private:
 	Matrix<Type> P_ForThreading, t_ForThreading;
 	std::vector<Type> res_ForThreading;
 	std::vector<int> Thr_boun;
+	double _err_Glob;
 public:
 	void init() {
 		err = 10000.0;
@@ -186,13 +187,16 @@ public:
 	void abs_thread(int arg)
 	{
 		int startingBoun = 0;
+		double err_trd, _err_trd = _err_Glob, v, r, __err_trd;
+		double sum1_trd, sum2_trd, x_trd;
+		int step_trd, times_trd, index, next_trd, total;
 		if (arg > 0)
 			startingBoun = Thr_boun[arg - 1];
 		for (int i = startingBoun; i < Thr_boun[arg]; i++)
 		{
-			double err_trd = 10000.0, _err_trd = 0.1, v = 1.0, r, __err_trd;
-			double sum1_trd = 0.0, sum2_trd = 0.0, x_trd = 0.0;
-			int step_trd = 100, times_trd = 1, index = i, next_trd = 0, total;
+			err_trd = 10000.0;
+			sum1_trd = 0.0; sum2_trd = 0.0; x_trd = 0.0;
+			step_trd = 100; times_trd = 1;
 
 			while (err_trd > _err_trd)
 			{
@@ -234,6 +238,7 @@ public:
 	//template <typename Type>
 	std::vector<Type> absorbing_UsingThreads(const Matrix<Type> &A, const std::vector<Type> &b, double _err = 0.1, int thrds = 3) {
 		std::thread threads[100];
+		_err_Glob = _err;
 		row = A.rows(); col = A.cols();
 		A_ForThreading = A;
 		b_ForThreading = b;
@@ -262,13 +267,16 @@ public:
 	void nonabs_thread(int arg)
 	{
 		int startingBoun = 0;
+		double err_trd, _err_trd = _err_Glob, v, r, w, err_w_trd, __err_trd;
+		double sum1_trd, sum2_trd, x_trd;
+		int step_trd, times_trd, index, next_trd, total;
 		if (arg > 0)
 			startingBoun = Thr_boun[arg - 1];
 		for (int i = startingBoun; i < Thr_boun[arg]; i++)
 		{
-			double err_trd = 10000.0, _err_trd = 0.1, v = 0.0, r, w = 1.0, err_w_trd = 1e-6, __err_trd;
-			double sum1_trd = 0.0, sum2_trd = 0.0, x_trd = 0.0;
-			int step_trd = 100, times_trd = 1, index = i, next_trd, total;
+			err_trd = 10000.0; err_w_trd = 1e-6;
+			sum1_trd = 0.0; sum2_trd = 0.0; x_trd = 0.0;
+			step_trd = 100; times_trd = 1;
 
 			while (err_trd > _err_trd)
 			{
@@ -310,6 +318,7 @@ public:
 	//template <typename Type>
 	std::vector<Type> nonabsorbing_UsingThreads(const Matrix<Type> &A, const std::vector<Type> &b, double _err = 0.1, int thrds = 3) {
 		std::thread threads[100];
+		_err_Glob = _err;
 		row = A.rows(); col = A.cols();
 		A_ForThreading = A;
 		b_ForThreading = b;
