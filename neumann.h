@@ -20,6 +20,8 @@ private:
 	std::vector<Type> b_ForThreading;
 	Matrix<Type> P_ForThreading, t_ForThreading;
 	std::vector<Type> res_ForThreading;
+	std::vector<int> Thr_boun;
+	double _err_Glob;
 public:
 	void init() {
 		err = 10000.0;
@@ -219,46 +221,59 @@ public:
 	//Threaded Absorbing
 	void abs_thread(int arg)
 	{
-		double err_trd = 10000.0, _err_trd = 0.1, v = 1.0, r, __err_trd;
-		double sum1_trd = 0.0, sum2_trd = 0.0, x_trd = 0.0;
-		int step_trd = 100, times_trd = 1, index = arg, next_trd, total;
-
-		while (err_trd > _err_trd)
+		int startingBoun = 0;
+		double err_trd, _err_trd = _err_Glob, v, r, __err_trd;
+		double sum1_trd, sum2_trd, x_trd;
+		int step_trd, times_trd, index, next_trd, total;
+		if (arg > 0)
+			startingBoun = Thr_boun[arg - 1];
+		for (int i = startingBoun; i < Thr_boun[arg]; i++)
 		{
-			while (step_trd--)
+			err_trd = 10000.0;
+			sum1_trd = 0.0; sum2_trd = 0.0; x_trd = 0.0;
+			step_trd = 100; times_trd = 1;
+
+			while (err_trd > _err_trd)
 			{
-				v = 1.0;
-				index = arg;
-				next_trd = 0;
-				while (next_trd != A_ForThreading.cols())
+				while (step_trd--)
 				{
-					r = double(rand()) / RAND_MAX;
-					next_trd = upper_bound(t_ForThreading[index].begin(), t_ForThreading[index].end(), r) - t_ForThreading[index].begin();
-					if (next_trd == A_ForThreading.cols()) continue;
-					v = v * A_ForThreading[index][next_trd] / P_ForThreading[index][next_trd];
-					index = next_trd;
+					v = 1.0;
+					index = i;
+					next_trd = 0;
+					while (next_trd != col)
+					{
+						r = double(rand()) / RAND_MAX;
+						next_trd = upper_bound(t_ForThreading[index].begin(), t_ForThreading[index].end(), r) - t_ForThreading[index].begin();
+						if (next_trd == col) continue;
+						if (P_ForThreading[index][next_trd] != 0)
+							v = v * A_ForThreading[index][next_trd] / P_ForThreading[index][next_trd];
+						else
+							v = 0;
+						index = next_trd;
+					}
+					v = v * b_ForThreading[index] / P_ForThreading[index][col];
+					sum1_trd += v;
+					sum2_trd += v * v;
 				}
-				v = v * b_ForThreading[index] / P_ForThreading[index][A_ForThreading.cols()];
-				sum1_trd += v;
-				sum2_trd += v * v;
+				step_trd = 100;
+				total = step_trd* times_trd;
+				if (total % 200000 == 0) {
+					cout << "Calculating x[" << i << "]: " << total << " Random walks generated" << endl;
+				}
+				x_trd = sum1_trd / total;
+				__err_trd = (sum2_trd - sum1_trd / total) / total / total;
+				times_trd++;
+				err_trd = sqrt(__err_trd) / x_trd;
 			}
-			step_trd = 100;
-			total = step_trd* times_trd;
-			if (total % 200000 == 0) {
-				cout << "Calculating x[" << arg << "]: " << total << " Random walks generated" << endl;
-			}
-			x_trd = sum1_trd / total;
-			__err_trd = (sum2_trd - sum1_trd / total) / total / total;
-			times_trd++;
-			err_trd = sqrt(__err_trd) / x_trd;
+			cout << "Calculating x[" << i << "]: " << total << " Random walks generated" << endl;
+			res_ForThreading[i] = x_trd;
 		}
-		cout << "Calculating x[" << arg << "]: " << total << " Random walks generated" << endl;
-		res_ForThreading[arg] = x_trd;
 	}
 
 	//template <typename Type>
-	std::vector<Type> absorbing_UsingThreads(const Matrix<Type> &A, const std::vector<Type> &b, double _err = 0.1) {
+	std::vector<Type> absorbing_UsingThreads(const Matrix<Type> &A, const std::vector<Type> &b, double _err = 0.1, int thrds = 3) {
 		std::thread threads[100];
+		_err_Glob = _err;
 		row = A.rows(); col = A.cols();
 		A_ForThreading = A;
 		b_ForThreading = b;
@@ -267,10 +282,17 @@ public:
 		size_t size = b.size();
 		res_ForThreading = std::vector<Type>(size);
 		srand((unsigned)time(NULL));
-		for (int i = 0; i < size; i++) {
+		Thr_boun = std::vector<int>();
+		int takenJobs = 0;
+		int thrdsNum = thrds;
+		if (thrdsNum > size)
+			thrdsNum = size;
+		for (int i = 0; i < thrdsNum; i++) {
+			takenJobs = (int)ceil((size - takenJobs) / (thrdsNum - i)) + takenJobs;
+			Thr_boun.push_back(takenJobs);
 			threads[i] = std::thread(&Neumann<Type>::abs_thread, this, i);
 		}
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < thrdsNum; i++) {
 			threads[i].join();
 		}
 		return res_ForThreading;
@@ -279,46 +301,59 @@ public:
 	//Threaded NonAbsorbing
 	void nonabs_thread(int arg)
 	{
-		double err_trd = 10000.0, _err_trd = 0.1, v = 0.0, r, w = 1.0, err_w_trd = 1e-6, __err_trd;
-		double sum1_trd = 0.0, sum2_trd = 0.0, x_trd = 0.0;
-		int step_trd = 100, times_trd = 1, index = arg, next_trd, total;
-
-		while (err_trd > _err_trd)
+		int startingBoun = 0;
+		double err_trd, _err_trd = _err_Glob, v, r, w, err_w_trd, __err_trd;
+		double sum1_trd, sum2_trd, x_trd;
+		int step_trd, times_trd, index, next_trd, total;
+		if (arg > 0)
+			startingBoun = Thr_boun[arg - 1];
+		for (int i = startingBoun; i < Thr_boun[arg]; i++)
 		{
-			while (step_trd--)
+			err_trd = 10000.0; err_w_trd = 1e-6;
+			sum1_trd = 0.0; sum2_trd = 0.0; x_trd = 0.0;
+			step_trd = 100; times_trd = 1;
+
+			while (err_trd > _err_trd)
 			{
-				v = 0.0;
-				w = 1.0;
-				index = arg;
-				next_trd = 0;
-				while (abs(w) > err_w_trd) {
-					r = double(rand()) / RAND_MAX;
-					next_trd = upper_bound(t_ForThreading[index].begin(), t_ForThreading[index].end(), r) - t_ForThreading[index].begin();
-					w = w * A_ForThreading[index][next_trd] / P_ForThreading[index][next_trd];
-					v = v + w * b_ForThreading[next_trd];
-					index = next_trd;
+				while (step_trd--)
+				{
+					v = 0.0;
+					w = 1.0;
+					index = i;
+					next_trd = 0;
+					while (abs(w) > err_w_trd) {
+						r = double(rand()) / RAND_MAX;
+						next_trd = upper_bound(t_ForThreading[index].begin(), t_ForThreading[index].end(), r) - t_ForThreading[index].begin();
+						if (P_ForThreading[index][next_trd] != 0)
+							w = w * A_ForThreading[index][next_trd] / P_ForThreading[index][next_trd];
+						else
+							w = 0;
+						v = v + w * b_ForThreading[next_trd];
+						index = next_trd;
+					}
+					v = v + b_ForThreading[i];
+					sum1_trd += v;
+					sum2_trd += v * v;
 				}
-				v = v + b_ForThreading[arg];
-				sum1_trd += v;
-				sum2_trd += v * v;
+				step_trd = 100;
+				total = step_trd* times_trd;
+				if (total % 200000 == 0) {
+					cout << "Calculating x[" << i << "]: " << total << " Random walks generated" << endl;
+				}
+				x_trd = sum1_trd / total;
+				__err_trd = (sum2_trd - sum1_trd / total) / total / total;
+				times_trd++;
+				err_trd = sqrt(__err_trd) / x_trd;
 			}
-			step_trd = 100;
-			total = step_trd* times_trd;
-			if (total % 200000 == 0) {
-				cout << "Calculating x[" << arg << "]: " << total << " Random walks generated" << endl;
-			}
-			x_trd = sum1_trd / total;
-			__err_trd = (sum2_trd - sum1_trd / total) / total / total;
-			times_trd++;
-			err_trd = sqrt(__err_trd) / x_trd;
+			cout << "Calculating x[" << i << "]: " << total << " Random walks generated" << endl;
+			res_ForThreading[i] = x_trd;
 		}
-		cout << "Calculating x[" << arg << "]: " << total << " Random walks generated" << endl;
-		res_ForThreading[arg] = x_trd;
 	}
 
 	//template <typename Type>
-	std::vector<Type> nonabsorbing_UsingThreads(const Matrix<Type> &A, const std::vector<Type> &b, double _err = 0.1) {
+	std::vector<Type> nonabsorbing_UsingThreads(const Matrix<Type> &A, const std::vector<Type> &b, double _err = 0.1, int thrds = 3) {
 		std::thread threads[100];
+		_err_Glob = _err;
 		row = A.rows(); col = A.cols();
 		A_ForThreading = A;
 		b_ForThreading = b;
@@ -327,10 +362,17 @@ public:
 		size_t size = b.size();
 		res_ForThreading = std::vector<Type>(size);
 		srand((unsigned)time(NULL));
-		for (int i = 0; i < size; i++) {
+		Thr_boun = std::vector<int>();
+		int takenJobs = 0;
+		int thrdsNum = thrds;
+		if (thrdsNum > size)
+			thrdsNum = size;
+		for (int i = 0; i < thrdsNum; i++) {
+			takenJobs = (int)ceil((size - takenJobs) / (thrdsNum - i)) + takenJobs;
+			Thr_boun.push_back(takenJobs);
 			threads[i] = std::thread(&Neumann<Type>::nonabs_thread, this, i);
 		}
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < thrdsNum; i++) {
 			threads[i].join();
 		}
 		return res_ForThreading;
