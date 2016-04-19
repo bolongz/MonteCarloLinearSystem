@@ -21,7 +21,7 @@ void Matrix<Type>::init( int rows, int columns )
 	for(int i = 0; i < row; i++){
 		_matrix[i].resize(col);
 		for(int j = 0; j < col; j++){
-			_matrix[i][j] = 0;
+			_matrix[i][j] = 0.0;
 		}
 	}
 }
@@ -30,7 +30,7 @@ template<typename Type>
 void Matrix<Type>::unit(){
 
 	for(int i = 0 ; i < row; i++)
-		_matrix[i][i] = 1;
+		_matrix[i][i] = 1.0;
 }
 
 /**

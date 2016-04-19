@@ -15,8 +15,11 @@ const Matrix<Type> nonAbsorbing(const Matrix<Type> &A, Matrix<Type> &P){
 			sum += abs(A[i][j]);
 		}
 		for(int j = 0 ; j < col; j++){
-
-			P[i][j] = abs(A[i][j]) / sum;
+			if(sum > 1e-6){
+				P[i][j] = abs(A[i][j]) / sum;
+			}else{
+				P[i][j] = 0.0;
+			}
 		}
 	}
 	for(int i = 0 ; i < row; i++){
@@ -42,7 +45,11 @@ const Matrix<Type> Absorbing(const Matrix<Type> &A, double scale, Matrix<Type> &
 		}
 		sum = double((double(col) + scale)) / col * sum;
 		for(int j = 0 ; j < col; j++){
-			P[i][j] = abs(A[i][j]) / sum;
+			if(sum > 1e-6){
+				P[i][j] = abs(A[i][j]) / sum;
+			}else{
+				P[i][j] = 0.0;
+			}
 			sum1 += P[i][j];
 		}
 		P[i][col] = 1 - sum1;
@@ -77,7 +84,11 @@ const Matrix<Type> backwards_p(const Matrix<Type> &A, double scale, Matrix<Type>
 		}
 		sum = double((double(col) + scale)) / col * sum;
 		for(int j = 0 ; j < col; j++){
-			P[i][j] = abs(B[i][j]) / sum;
+			if(sum  > 1e-6){
+				P[i][j] = abs(B[i][j]) / sum;
+			}else{
+				P[i][j] = 0.0;
+			}
 			sum1 += P[i][j];
 		}
 		P[i][col] = 1 - sum1;
