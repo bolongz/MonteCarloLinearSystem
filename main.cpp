@@ -29,7 +29,42 @@ int main(int argc, char *argv[]){
 	for(int i = 0 ; i < r ;i++){
 		fscanf(equ, "%lf", &b[i]);
 	}
-	bool _sdd = true;
+
+	vector<double> d(r, 1.0);
+	
+	while(true){
+		vector<double> sum(r, 0);
+		for(int i = 0 ; i < r ; i++){
+			for(int j = 0 ; j < r ;j++){
+				if( i != j){
+					sum[i] += abs(A[i][j]);
+				}
+			}
+		}
+		int t = 0;
+		for(int i = 0; i < r; i++){
+			if(abs(A[i][i]) > sum[i]){
+					t = t +1;
+			}
+		}
+		if( t == 0){
+			cout << "A is not GDD" << endl;
+			exit(1);
+		}else if( t == r){
+			break;
+		}else{
+			for(int  i = 0 ; i < r; i++){
+				double di = (sum[i] + 0.1)/(abs(A[i][i]) + 0.1);
+				d[i] = di * d[i];
+				for(int j = 0; j < r; j++){
+					A[j][i] = A[j][i] * di;
+				}
+			}
+		}
+	}
+
+
+/*	bool _sdd = true;
 	for(int i = 0; i< r; i++){
 		double sum = 0.0;
 		for(int j = 0; j< r; j++){
@@ -43,8 +78,8 @@ int main(int argc, char *argv[]){
 		}
 
 	}
-
-	if(!_sdd){
+*/
+/*	if(!_sdd){
 		Matrix<double> I(r,c); //define the unit matrix
 		I.unit();
 		A = I - A; // calculate the H;
@@ -54,15 +89,20 @@ int main(int argc, char *argv[]){
 			exit(1);
 		}
 	}else{
-		for(int i = 0 ; i<r;i++){
+*/	
+	for(int i = 0 ;i < r; i++){
+		cout << d[i] << " ";
+	}
+	cout << endl;
+	for(int i = 0 ; i<r;i++){
 			for(int j = 0; j < r; j++){
 				if(i != j)
 					A[i][j] = -A[i][j] / A[i][i];
 			}
-			b[i] = b[i]/A[i][i];
+			b[i] = d[i] * b[i]/A[i][i];
 			A[i][i] = 0.0;
 		}
-	}
+//	}
 	
 	//printmatrix(A);
 	double p;
@@ -78,6 +118,10 @@ int main(int argc, char *argv[]){
 		nwalks = atoi(argv[4]);
 	}
 	
+	int t = 3;
+	if(argc > 7){
+		t = atoi(argv[8]);
+	}
 	Timer tmr;
 	Neumann<double> neumann;
 	std::vector<double> res;
@@ -90,16 +134,12 @@ int main(int argc, char *argv[]){
 			res = neumann.absorbing(A,b, p);
 		}else if (argv[6][0] == 'B') {
 			cout << "Method with Absorbing Matrix using threads:" << endl;
-			res = neumann.absorbing_UsingThreads(A, b, p, 3); // modify number of threads
+			res = neumann.absorbing_UsingThreads(A, b, p, t); // modify number of threads
 		}else if (argv[6][0] == 'c') {
 			cout << "Method with nonAbsorbing Matrix using threads:" << endl;
-<<<<<<< HEAD
-			res = neumann.nonabsorbing_UsingThreads(A, b, p);
+			res = neumann.nonabsorbing_UsingThreads(A, b, p, t);// modify number of threads
 		}else if(argv[6][0] == 'b'){
 			res = neumann.backwards(A,b,nwalks);
-=======
-			res = neumann.nonabsorbing_UsingThreads(A, b, p, 3);// modify number of threads
->>>>>>> 2db76b69be6552cd905474ca0781cbdf21aaaef6
 		}else{
 			cout << "Wrong input type paramenters" << endl;
 		}

@@ -231,7 +231,7 @@ public:
 		{
 			err_trd = 10000.0;
 			sum1_trd = 0.0; sum2_trd = 0.0; x_trd = 0.0;
-			step_trd = 100; times_trd = 1;
+			step_trd = 1000; times_trd = 1;
 
 			while (err_trd > _err_trd)
 			{
@@ -255,7 +255,7 @@ public:
 					sum1_trd += v;
 					sum2_trd += v * v;
 				}
-				step_trd = 100;
+				step_trd = 1000;
 				total = step_trd* times_trd;
 				if (total % 200000 == 0) {
 					cout << "Calculating x[" << i << "]: " << total << " Random walks generated" << endl;
@@ -311,7 +311,7 @@ public:
 		{
 			err_trd = 10000.0; err_w_trd = 1e-6;
 			sum1_trd = 0.0; sum2_trd = 0.0; x_trd = 0.0;
-			step_trd = 100; times_trd = 1;
+			step_trd = 1000; times_trd = 1;
 
 			while (err_trd > _err_trd)
 			{
@@ -335,7 +335,7 @@ public:
 					sum1_trd += v;
 					sum2_trd += v * v;
 				}
-				step_trd = 100;
+				step_trd = 1000;
 				total = step_trd* times_trd;
 				if (total % 200000 == 0) {
 					cout << "Calculating x[" << i << "]: " << total << " Random walks generated" << endl;
