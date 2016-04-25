@@ -120,7 +120,7 @@ int main(int argc, char *argv[]){
 	
 	int t = 3;
 	if(argc > 7){
-		t = atoi(argv[8]);
+		t = atoi(argv[7]);
 	}
 	Timer tmr;
 	Neumann<double> neumann;

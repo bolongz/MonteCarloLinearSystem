@@ -22,6 +22,7 @@ private:
 	std::vector<Type> res_ForThreading;
 	std::vector<int> Thr_boun;
 	double _err_Glob;
+	int _hops_trd, _total_trd;
 public:
 	void init() {
 		err = 10000.0;
@@ -224,17 +225,18 @@ public:
 		int startingBoun = 0;
 		double err_trd, _err_trd = _err_Glob, v, r, __err_trd;
 		double sum1_trd, sum2_trd, x_trd;
-		int step_trd, times_trd, index, next_trd, total;
+		int step_trd, times_trd, index, next_trd, total, hops_trd, cc;
 		if (arg > 0)
 			startingBoun = Thr_boun[arg - 1];
 		for (int i = startingBoun; i < Thr_boun[arg]; i++)
 		{
 			err_trd = 10000.0;
 			sum1_trd = 0.0; sum2_trd = 0.0; x_trd = 0.0;
-			step_trd = 1000; times_trd = 1;
-
+			step_trd = 20000; times_trd = 1; hops_trd = 0; total = 0;
+			cout << "Calculating x[" << i << "]... " << endl;
 			while (err_trd > _err_trd)
 			{
+				cc = step;
 				while (step_trd--)
 				{
 					v = 1.0;
@@ -245,28 +247,32 @@ public:
 						r = double(rand()) / RAND_MAX;
 						next_trd = upper_bound(t_ForThreading[index].begin(), t_ForThreading[index].end(), r) - t_ForThreading[index].begin();
 						if (next_trd == col) continue;
-						if (P_ForThreading[index][next_trd] != 0)
+						if (abs(P_ForThreading[index][next_trd]) > 1e-6)
 							v = v * A_ForThreading[index][next_trd] / P_ForThreading[index][next_trd];
 						else
 							v = 0;
+						hops_trd++; _hops_trd++;
 						index = next_trd;
 					}
 					v = v * b_ForThreading[index] / P_ForThreading[index][col];
 					sum1_trd += v;
 					sum2_trd += v * v;
 				}
-				step_trd = 1000;
-				total = step_trd* times_trd;
+				step_trd = 1;
+				total = total + cc;
 				if (total % 200000 == 0) {
-					cout << "Calculating x[" << i << "]: " << total << " Random walks generated" << endl;
+					cout << total << " Random walks generated" << endl;
 				}
 				x_trd = sum1_trd / total;
 				__err_trd = (sum2_trd - sum1_trd / total) / total / total;
 				times_trd++;
 				err_trd = sqrt(__err_trd) / x_trd;
 			}
-			cout << "Calculating x[" << i << "]: " << total << " Random walks generated" << endl;
+			cout << endl;
+			cout << "Total random walks: " << total << endl;
+			cout << "Average hops: " << hops_trd / total << endl;
 			res_ForThreading[i] = x_trd;
+			_total_trd += total;
 		}
 	}
 
@@ -282,6 +288,7 @@ public:
 		size_t size = b.size();
 		res_ForThreading = std::vector<Type>(size);
 		srand((unsigned)time(NULL));
+		_total_trd = 0; _hops_trd = 0;
 		Thr_boun = std::vector<int>();
 		int takenJobs = 0;
 		int thrdsNum = thrds;
@@ -295,6 +302,9 @@ public:
 		for (int i = 0; i < thrdsNum; i++) {
 			threads[i].join();
 		}
+		cout << endl;
+		cout << "Avegage total random walks: " << _total_trd << endl;
+		cout << "Average hops: " << _hops_trd / _total_trd << endl;
 		return res_ForThreading;
 	}
 
@@ -304,17 +314,18 @@ public:
 		int startingBoun = 0;
 		double err_trd, _err_trd = _err_Glob, v, r, w, err_w_trd, __err_trd;
 		double sum1_trd, sum2_trd, x_trd;
-		int step_trd, times_trd, index, next_trd, total;
+		int step_trd, times_trd, index, next_trd, total, hops_trd, cc;
 		if (arg > 0)
 			startingBoun = Thr_boun[arg - 1];
 		for (int i = startingBoun; i < Thr_boun[arg]; i++)
 		{
 			err_trd = 10000.0; err_w_trd = 1e-6;
 			sum1_trd = 0.0; sum2_trd = 0.0; x_trd = 0.0;
-			step_trd = 1000; times_trd = 1;
-
+			step_trd = 20000; times_trd = 1, total = 0;
+			cout << "Calculating x[" << i << "]... " << endl;
 			while (err_trd > _err_trd)
 			{
+				cc = step_trd;
 				while (step_trd--)
 				{
 					v = 0.0;
@@ -324,10 +335,11 @@ public:
 					while (abs(w) > err_w_trd) {
 						r = double(rand()) / RAND_MAX;
 						next_trd = upper_bound(t_ForThreading[index].begin(), t_ForThreading[index].end(), r) - t_ForThreading[index].begin();
-						if (P_ForThreading[index][next_trd] != 0)
+						if (P_ForThreading[index][next_trd] > 1e-6)
 							w = w * A_ForThreading[index][next_trd] / P_ForThreading[index][next_trd];
 						else
 							w = 0;
+						hops_trd++; _hops_trd++;
 						v = v + w * b_ForThreading[next_trd];
 						index = next_trd;
 					}
@@ -335,17 +347,21 @@ public:
 					sum1_trd += v;
 					sum2_trd += v * v;
 				}
-				step_trd = 1000;
-				total = step_trd* times_trd;
+				step_trd = 1;
+				total = total + cc;
 				if (total % 200000 == 0) {
-					cout << "Calculating x[" << i << "]: " << total << " Random walks generated" << endl;
+					cout << total << " Random walks generated" << endl;
 				}
 				x_trd = sum1_trd / total;
 				__err_trd = (sum2_trd - sum1_trd / total) / total / total;
 				times_trd++;
 				err_trd = sqrt(__err_trd) / x_trd;
+				if (total >= 5000000) break;
 			}
-			cout << "Calculating x[" << i << "]: " << total << " Random walks generated" << endl;
+			cout << endl;
+			cout << "Total random walks: " << total << endl;
+			cout << "Average hops: " << hops_trd / total << endl;
+			_total_trd += total;
 			res_ForThreading[i] = x_trd;
 		}
 	}
@@ -362,6 +378,7 @@ public:
 		size_t size = b.size();
 		res_ForThreading = std::vector<Type>(size);
 		srand((unsigned)time(NULL));
+		_total_trd = 0; _hops_trd = 0;
 		Thr_boun = std::vector<int>();
 		int takenJobs = 0;
 		int thrdsNum = thrds;
@@ -375,6 +392,9 @@ public:
 		for (int i = 0; i < thrdsNum; i++) {
 			threads[i].join();
 		}
+		cout << endl;
+		cout << "Avegage total random walks: " << _total_trd << endl;
+		cout << "Average hops: " << _hops_trd / _total_trd << endl;
 		return res_ForThreading;
 	}
 };
